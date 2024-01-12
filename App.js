@@ -1,5 +1,5 @@
 import { StatusBar } from "expo-status-bar";
-import { StyleSheet, Text, View } from "react-native";
+import { Pressable, StyleSheet, Text, View } from "react-native";
 import { NavigationContainer } from "@react-navigation/native";
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
 import ManageCourse from "./screens/ManageCourse";
@@ -7,7 +7,7 @@ import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
 import RecentCourses from "./screens/RecentCourses";
 import AllCourses from "./screens/AllCourses";
 import { AntDesign } from "@expo/vector-icons";
-import { Entypo } from '@expo/vector-icons';
+import { Entypo } from "@expo/vector-icons";
 
 const Stack = createNativeStackNavigator();
 const Tab = createBottomTabNavigator();
@@ -15,12 +15,24 @@ const Tab = createBottomTabNavigator();
 const CourseOverview = () => {
   return (
     <Tab.Navigator
-      screenOptions={{
+      screenOptions={({ navigation }) => ({
         headerStyle: { backgroundColor: "pink" },
         headerTintColor: "white",
         tabBarStyle: { backgroundColor: "pink" },
         tabBarActiveTintColor: "darkblue",
-      }}
+        headerRight: () => (
+          <Pressable
+            style={({ pressed }) => pressed && styles.pressed}
+            onPress={() => {
+              navigation.navigate("ManageCourse");
+            }}
+          >
+            <View style={styles.icon}>
+              <AntDesign name="plus" size={24} color="white" />
+            </View>
+          </Pressable>
+        ),
+      })}
     >
       <Tab.Screen
         name="Recent Courses"
@@ -60,10 +72,11 @@ export default function App() {
 }
 
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: "#fff",
-    alignItems: "center",
-    justifyContent: "center",
+  pressed: {
+    opacity: 0.5,
+  },
+  icon: {
+    marginHorizontal: 8,
+    marginVertical: 2,
   },
 });
