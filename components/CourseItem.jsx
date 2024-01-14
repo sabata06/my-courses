@@ -1,11 +1,18 @@
 import { Pressable, StyleSheet, Text, View } from 'react-native';
 import React from 'react';
 import { dateFormatter } from '../helper/date';
+import {useNavigation} from "@react-navigation/native"
 
 
 export default function CourseItem({ amount, date, description, id }) {
+    const navigation = useNavigation()
+
+    const coursePress = () =>{
+        navigation.navigate("ManageCourse", {courseId: id})
+    }
+
   return (
-    <Pressable>
+    <Pressable onPress={coursePress}>
       <View style={styles.courseContainer}>
         <View>
           <Text style={styles.description}>{description}</Text>
