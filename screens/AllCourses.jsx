@@ -6,7 +6,7 @@ import { CoursesContext } from "../context/coursesContext";
 
 export default function AllCourses() {
   const coursesContext = useContext(CoursesContext)
-  return <Courses courses = {coursesContext.courses} coursesPeriod="All Courses" />;
+  return <Courses courses = {coursesContext.courses} coursesPeriod="All Courses" nullText="You are not enrolled in any course!" />;
 }
 
 const styles = StyleSheet.create({});
