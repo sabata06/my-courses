@@ -1,16 +1,18 @@
 import { Pressable, StyleSheet, Text, View } from "react-native";
 import React, { useState } from "react";
 import Input from "./Input";
+import { dateFormatter } from "../helper/date";
 
 export default function CourseForm({
   cancelHandler,
   onSubmit,
   buttonLabel,
+  defaultValues,
 }) {
   const [inputs, setInputs] = useState({
-    amount: "",
-    date: "",
-    description: "",
+    amount: defaultValues ? defaultValues.amount.toString() : "",
+    date: defaultValues ? dateFormatter(defaultValues.date) : "",
+    description: defaultValues ? defaultValues.description : "",
   });
 
   const inputChange = (inputIdentifier, enteredValue) => {
@@ -24,11 +26,11 @@ export default function CourseForm({
 
   function addOrUpdateHandler() {
     const courseData = {
-      amount: Number(inputs.amount), 
+      amount: Number(inputs.amount),
       date: new Date(inputs.date),
       description: inputs.description,
     };
-    onSubmit(courseData)
+    onSubmit(courseData);
   }
 
   return (

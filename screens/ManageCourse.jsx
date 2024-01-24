@@ -10,6 +10,8 @@ export default function ManageCourse({ route, navigation }) {
   const courseId = route.params?.courseId;
   let isEditing = false;
 
+  const selectedCourse = coursesContext.courses.find((course) => (course.id === courseId))
+
   if (courseId) {
     isEditing = true;
   }
@@ -43,6 +45,7 @@ export default function ManageCourse({ route, navigation }) {
         onSubmit={addOrUpdateHandler}
         cancelHandler={cancelHandler}
         buttonLabel={isEditing ? "Update" : "Add"}
+        defaultValues={selectedCourse}
       />
 
       {isEditing && (
