@@ -1,7 +1,8 @@
-import { Pressable, StyleSheet, Text, View } from "react-native";
-import React, { useState } from "react";
-import Input from "./Input";
-import { dateFormatter } from "../helper/date";
+import { StyleSheet, Text, View, Pressable, Alert } from 'react-native';
+import React from 'react';
+import Input from './Input';
+import { useState } from 'react';
+import { dateFormatter } from '../helper/date';
 
 export default function CourseForm({
   cancelHandler,
@@ -10,71 +11,113 @@ export default function CourseForm({
   defaultValues,
 }) {
   const [inputs, setInputs] = useState({
-    amount: defaultValues ? defaultValues.amount.toString() : "",
-    date: defaultValues ? dateFormatter(defaultValues.date) : "",
-    description: defaultValues ? defaultValues.description : "",
-  });
+    amount: {
+      value: defaultValues ? defaultValues.amount.toString() : '',
+      isValid: true,
+    },
+    date: {
+      value: defaultValues ? dateFormatter(defaultValues.date) : '',
+      isValid: true,
+    },
 
-  const inputChange = (inputIdentifier, enteredValue) => {
-    setInputs((currentInput) => {
-      return {
-        ...currentInput,
-        [inputIdentifier]: enteredValue,
-      };
-    });
-  };
+    description: {
+      value: defaultValues ? defaultValues.description : '',
+      isValid: true,
+    },
+  });
 
   function addOrUpdateHandler() {
     const courseData = {
-      amount: Number(inputs.amount),
-      date: new Date(inputs.date),
-      description: inputs.description,
+      amount: Number(inputs.amount.value),
+      date: new Date(inputs.date.value),
+      description: inputs.description.value,
     };
+    console.log(courseData);
+
+    const amountIsValid = courseData.amount > 0;
+    const dateIsValid = courseData.date.toString() !== 'Invalid Date';
+    const descriptionIsValid = courseData.description.trim().length > 0;
+
+    if (!amountIsValid || !dateIsValid || !descriptionIsValid) {
+      setInputs((currentInputs) => {
+        return {
+          amount: {
+            value: Number(currentInputs.amount.value),
+            isValid: amountIsValid,
+          },
+          date: { value: currentInputs.date.value, isValid: dateIsValid },
+          description: {
+            value: currentInputs.description.value,
+            isValid: descriptionIsValid,
+          },
+        };
+      });
+      return;
+    }
+
     onSubmit(courseData);
   }
 
+  console.log(inputs);
+  function inputChange(inputIdentifier, enteredValue) {
+    setInputs((currentInput) => {
+      return {
+        ...currentInput,
+        [inputIdentifier]: { value: enteredValue, isValid: true },
+      };
+    });
+  }
   return (
     <View style={styles.form}>
       <Text style={styles.title}>Kurs Bilgileri</Text>
       <View style={styles.priceAndDate}>
         <Input
           style={styles.flexAll}
-          label="Price"
+          label="Tutar"
           textInputConfig={{
-            keyboardType: "decimal-pad",
-            onChangeText: inputChange.bind(this, "amount"),
-            value: inputs.amount,
+            keyboardType: 'decimal-pad',
+            onChangeText: inputChange.bind(this, 'amount'),
+            value: inputs.amount.value.toString(),
           }}
         />
         <Input
           style={styles.flexAll}
-          label="Date"
+          label="Tarih"
           textInputConfig={{
-            placeHolder: "YYYY-MM-DD",
+            placeHolder: 'YYYY-MM-DD',
             maxLength: 10,
-            onChangeText: inputChange.bind(this, "date"),
-            value: inputs.date,
+            onChangeText: inputChange.bind(this, 'date'),
+            value: inputs.date.value,
           }}
         />
       </View>
 
       <Input
-        label="Title"
+        label="Başlık"
         textInputConfig={{
           multiline: true,
-          onChangeText: inputChange.bind(this, "description"),
-          value: inputs.description,
+          onChangeText: inputChange.bind(this, 'description'),
+          value: inputs.description.value,
         }}
       />
+      {!inputs.amount.isValid && (
+        <Text>Lütfen tutarı doğru formatta giriniz</Text>
+      )}
+      {!inputs.date.isValid && (
+        <Text>Lütfen tarihi doğru formatta giriniz</Text>
+      )}
+      {!inputs.description.isValid && (
+        <Text>Lütfen başlığı doğru formatta giriniz</Text>
+      )}
       <View style={styles.buttons}>
         <Pressable onPress={cancelHandler}>
           <View style={styles.cancel}>
-            <Text style={styles.cancelText}>Cancel</Text>
+            <Text style={styles.cancelText}>İptal Et</Text>
           </View>
         </Pressable>
         <Pressable onPress={addOrUpdateHandler}>
-          <View style={styles.update}>
-            <Text style={styles.updateText}>{buttonLabel}</Text>
+          <View style={styles.addOrDelete}>
+            <Text style={styles.addOrDeleteText}>{buttonLabel}</Text>
           </View>
         </Pressable>
       </View>
@@ -88,39 +131,39 @@ const styles = StyleSheet.create({
   },
   title: {
     fontSize: 25,
-    fontWeight: "bold",
-    textAlign: "center",
-    color: "blue",
+    fontWeight: 'bold',
+    textAlign: 'center',
+    color: 'blue',
     marginVertical: 20,
   },
   priceAndDate: {
-    flexDirection: "row",
+    flexDirection: 'row',
   },
   flexAll: {
     flex: 1,
   },
   buttons: {
-    flexDirection: "row",
-    justifyContent: "center",
+    flexDirection: 'row',
+    justifyContent: 'center',
   },
   cancel: {
-    backgroundColor: "red",
+    backgroundColor: 'red',
     minWidth: 120,
     marginRight: 10,
     padding: 8,
-    alignItems: "center",
+    alignItems: 'center',
   },
   cancelText: {
-    color: "white",
+    color: 'white',
   },
-  update: {
-    backgroundColor: "blue",
+  addOrDelete: {
+    backgroundColor: 'blue',
     minWidth: 120,
     marginRight: 10,
     padding: 8,
-    alignItems: "center",
+    alignItems: 'center',
   },
-  updateText: {
-    color: "white",
+  addOrDeleteText: {
+    color: 'white',
   },
 });
