@@ -74,6 +74,7 @@ export default function CourseForm({
         <Input
           style={styles.flexAll}
           label="Tutar"
+          invalid={!inputs.amount.isValid}
           textInputConfig={{
             keyboardType: 'decimal-pad',
             onChangeText: inputChange.bind(this, 'amount'),
@@ -83,6 +84,7 @@ export default function CourseForm({
         <Input
           style={styles.flexAll}
           label="Tarih"
+          invalid={!inputs.date.isValid}
           textInputConfig={{
             placeHolder: 'YYYY-MM-DD',
             maxLength: 10,
@@ -94,21 +96,24 @@ export default function CourseForm({
 
       <Input
         label="Başlık"
+        invalid={!inputs.description.isValid}
         textInputConfig={{
           multiline: true,
           onChangeText: inputChange.bind(this, 'description'),
           value: inputs.description.value,
         }}
       />
-      {!inputs.amount.isValid && (
-        <Text>Lütfen tutarı doğru formatta giriniz</Text>
-      )}
-      {!inputs.date.isValid && (
-        <Text>Lütfen tarihi doğru formatta giriniz</Text>
-      )}
-      {!inputs.description.isValid && (
-        <Text>Lütfen başlığı doğru formatta giriniz</Text>
-      )}
+      <View style={styles.error}>
+        {!inputs.amount.isValid && (
+          <Text>Lütfen tutarı doğru formatta giriniz</Text>
+        )}
+        {!inputs.date.isValid && (
+          <Text>Lütfen tarihi doğru formatta giriniz</Text>
+        )}
+        {!inputs.description.isValid && (
+          <Text>Lütfen başlığı doğru formatta giriniz</Text>
+        )}
+      </View>
       <View style={styles.buttons}>
         <Pressable onPress={cancelHandler}>
           <View style={styles.cancel}>
@@ -165,5 +170,9 @@ const styles = StyleSheet.create({
   },
   addOrDeleteText: {
     color: 'white',
+  },
+  error: {
+    alignItems: 'center',
+    marginBottom: 10,
   },
 });
