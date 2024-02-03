@@ -9,6 +9,7 @@ import LoadingSpinner from "../components/LoadingSpinner";
 export default function ManageCourse({ route, navigation }) {
   const coursesContext = useContext(CoursesContext);
   const [isSubmitting, setIsSubmitting] = useState(false)
+  const [error, setError] = useState();
 
   const courseId = route.params?.courseId;
   let isEditing = false;
@@ -23,32 +24,47 @@ export default function ManageCourse({ route, navigation }) {
 
   useLayoutEffect(() => {
     navigation.setOptions({
-      title: isEditing ? "Edit Course" : "Add Course",
+      title: isEditing ? 'Kursu Güncelle' : 'Kurs Ekle',
     });
   }, [navigation, isEditing]);
 
   async function deleteCourse() {
-    setIsSubmitting(true)
-    coursesContext.deleteCourse(courseId);
-    await deleteCourseHttp(courseId)
-    navigation.goBack();
+    setIsSubmitting(true);
+    setError(null);
+    try {
+      coursesContext.deleteCourse(courseId);
+      await deleteCourseHttp(courseId);
+      navigation.goBack();
+    } catch (error) {
+      setError('Kursları silemedik!');
+      setIsSubmitting(false);
+    }
   }
+  if (error && !isSubmitting) {
+    return <ErrorText message={error} />;
+  }
+
   function cancelHandler() {
     navigation.goBack();
   }
 
   async function addOrUpdateHandler(courseData) {
-    setIsSubmitting(true)
-    if (isEditing) {
-      coursesContext.updateCourse(courseId, courseData);
-      await updateCourse(courseId, courseData)
-    } else {
-     const id = await storeCourse(courseData);
-      coursesContext.addCourse({...courseData, id:id});
+    setIsSubmitting(true);
+    setError(null);
+    try {
+      if (isEditing) {
+        coursesContext.updateCourse(courseId, courseData);
+        await updateCourse(courseId, courseData);
+      } else {
+        const id = await storeCourse(courseData);
+        coursesContext.addCourse({ ...courseData, id: id });
+      }
+      navigation.goBack();
+    } catch (error) {
+      setError('Kurs eklemede veya güncellemede problem var!');
+      setIsSubmitting(false);
     }
-    navigation.goBack();
   }
-
 
   if (isSubmitting) {
     return <LoadingSpinner />;

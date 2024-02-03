@@ -5,22 +5,36 @@ import { CoursesContext } from "../context/coursesContext";
 import { getLastWeek } from "../helper/date";
 import { getCourses } from "../helper/http";
 import LoadingSpinner from "../components/LoadingSpinner";
+import ErrorText from "../components/ErrorText";
 
 export default function RecentCourses() {
   const coursesContext = useContext(CoursesContext);
-  const [isFetch, setIsFetching] = useState(false);
+  const [isFetching, setIsFetching] = useState(true);
+  const [error, setError] = useState();
 
   useEffect(() => {
     async function takeCourses() {
+      setError(null);
       setIsFetching(true);
-      const courses = await getCourses();
-      coursesContext.setCourse(courses);
+      try {
+        const courses = await getCourses();
+        coursesContext.setCourse(courses);
+      } catch (error) {
+        setError('Courses are not fetching!');
+      }
+
       setIsFetching(false);
+      // setFetchedCourses(courses);
     }
+
     takeCourses();
   }, []);
 
-  if (isFetch) {
+  if (error && !isFetching) {
+    return <ErrorText message={error} />;
+  }
+
+  if (isFetching) {
     return <LoadingSpinner />;
   }
 
