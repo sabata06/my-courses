@@ -1,12 +1,14 @@
 import { Pressable, StyleSheet, Text, View } from "react-native";
-import React, { useContext, useLayoutEffect } from "react";
+import React, { useContext, useLayoutEffect, useState } from "react";
 import { EvilIcons } from "@expo/vector-icons";
 import { CoursesContext } from "../context/coursesContext";
 import CourseForm from "../components/CourseForm";
 import { deleteCourseHttp, storeCourse, updateCourse } from "../helper/http";
+import LoadingSpinner from "../components/LoadingSpinner";
 
 export default function ManageCourse({ route, navigation }) {
   const coursesContext = useContext(CoursesContext);
+  const [isSubmitting, setIsSubmitting] = useState(false)
 
   const courseId = route.params?.courseId;
   let isEditing = false;
@@ -26,6 +28,7 @@ export default function ManageCourse({ route, navigation }) {
   }, [navigation, isEditing]);
 
   async function deleteCourse() {
+    setIsSubmitting(true)
     coursesContext.deleteCourse(courseId);
     await deleteCourseHttp(courseId)
     navigation.goBack();
@@ -35,6 +38,7 @@ export default function ManageCourse({ route, navigation }) {
   }
 
   async function addOrUpdateHandler(courseData) {
+    setIsSubmitting(true)
     if (isEditing) {
       coursesContext.updateCourse(courseId, courseData);
       await updateCourse(courseId, courseData)
@@ -43,6 +47,11 @@ export default function ManageCourse({ route, navigation }) {
       coursesContext.addCourse({...courseData, id:id});
     }
     navigation.goBack();
+  }
+
+
+  if (isSubmitting) {
+    return <LoadingSpinner />;
   }
 
   return (
