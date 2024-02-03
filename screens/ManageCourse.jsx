@@ -33,12 +33,12 @@ export default function ManageCourse({ route, navigation }) {
     navigation.goBack();
   }
 
-  function addOrUpdateHandler(courseData) {
+  async function addOrUpdateHandler(courseData) {
     if (isEditing) {
       coursesContext.updateCourse(courseId, courseData);
     } else {
-      storeCourse(courseData);
-      coursesContext.addCourse(courseData);
+     const id = await storeCourse(courseData);
+      coursesContext.addCourse({...courseData, id:id});
     }
     navigation.goBack();
   }

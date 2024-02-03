@@ -1,5 +1,5 @@
 import { StyleSheet, Text, View } from "react-native";
-import React, { useContext, useEffect } from "react";
+import React, { useContext, useEffect, useState } from "react";
 import Courses from "../components/Courses";
 import { CoursesContext } from "../context/coursesContext";
 import { getLastWeek } from "../helper/date";
@@ -11,15 +11,15 @@ export default function RecentCourses() {
   useEffect(() => {
     async function takeCourses() {
       const courses = await getCourses();
+      coursesContext.setCourse(courses);
     }
-
     takeCourses();
   }, []);
 
-  const recentCourses = coursesContext.courses.filter((course) => {
+  const recentCourses = coursesContext?.courses.filter((course) => {
     const today = new Date();
     const dateLastWeek = getLastWeek(today, 7);
-
+    console.log(recentCourses);
     return course.date >= dateLastWeek && course.date <= today;
   });
 
