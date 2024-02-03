@@ -3,6 +3,7 @@ import React, { useContext, useLayoutEffect } from "react";
 import { EvilIcons } from "@expo/vector-icons";
 import { CoursesContext } from "../context/coursesContext";
 import CourseForm from "../components/CourseForm";
+import { storeCourse } from "../helper/http";
 
 export default function ManageCourse({ route, navigation }) {
   const coursesContext = useContext(CoursesContext);
@@ -10,7 +11,9 @@ export default function ManageCourse({ route, navigation }) {
   const courseId = route.params?.courseId;
   let isEditing = false;
 
-  const selectedCourse = coursesContext.courses.find((course) => (course.id === courseId))
+  const selectedCourse = coursesContext.courses.find(
+    (course) => course.id === courseId
+  );
 
   if (courseId) {
     isEditing = true;
@@ -34,6 +37,7 @@ export default function ManageCourse({ route, navigation }) {
     if (isEditing) {
       coursesContext.updateCourse(courseId, courseData);
     } else {
+      storeCourse(courseData);
       coursesContext.addCourse(courseData);
     }
     navigation.goBack();
